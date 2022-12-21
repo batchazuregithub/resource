@@ -5,23 +5,23 @@
 		"workspaceName": {
 			"value": "synapse-001"
 		},
-		"synapse-001-WorkspaceDefaultSqlServer_connectionString": {
-			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-001.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
-		},
-		"MySql_sakila_connectionString": {
+		"GitHub1_credential": {
 			"value": ""
 		},
 		"MySql1_connectionString": {
 			"value": ""
 		},
-		"GitHub1_credential": {
+		"MySql_sakila_connectionString": {
 			"value": ""
 		},
-		"synapse-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
-			"value": "https://team001storage.dfs.core.windows.net"
+		"synapse-001-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-001.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"GitHub1_properties_typeProperties_username": {
 			"value": "batchazuregithub"
+		},
+		"synapse-001-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://team001storage.dfs.core.windows.net"
 		}
 	}
 }
