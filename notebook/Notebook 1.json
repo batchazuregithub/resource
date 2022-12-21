@@ -1,0 +1,60 @@
+{
+	"name": "Notebook 1",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "ABC",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "6ef3901b-447c-4372-aa81-834161f4048e"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "sql"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/ABC",
+				"name": "ABC",
+				"type": "Spark",
+				"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ABC",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"create external table default.customers using parquet location \"abfss://synapse@team001storage.dfs.core.windows.net/CM/*\";"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
