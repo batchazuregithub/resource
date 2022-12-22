@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "{ [\"rental\", \"payment\", \"customer\"]}",
+						"value": "@pipeline().parameters.tablelist",
 						"type": "Expression"
 					},
 					"activities": [
@@ -77,6 +77,16 @@
 				}
 			}
 		],
+		"parameters": {
+			"tablelist": {
+				"type": "array",
+				"defaultValue": [
+					"rental",
+					"payment",
+					"customer"
+				]
+			}
+		},
 		"annotations": []
 	}
 }
