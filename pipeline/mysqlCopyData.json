@@ -27,7 +27,11 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "MySqlSource"
+									"type": "MySqlSource",
+									"query": {
+										"value": "@concat('select * from ',item(),' where column_name>','date')",
+										"type": "Expression"
+									}
 								},
 								"sink": {
 									"type": "ParquetSink",
