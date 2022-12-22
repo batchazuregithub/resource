@@ -15,7 +15,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "CM",
+				"folderPath": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
 				"fileSystem": "synapse"
 			},
 			"compressionCodec": "snappy"
