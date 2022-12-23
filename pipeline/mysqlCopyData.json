@@ -5,11 +5,18 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@pipeline().parameters.tablelist",
+						"value": "@activity('Lookup1').output.value",
 						"type": "Expression"
 					},
 					"activities": [
@@ -29,7 +36,7 @@
 								"source": {
 									"type": "MySqlSource",
 									"query": {
-										"value": "@concat('select * from ',item(),' where column_name>','date')",
+										"value": "@concat('select * from ',item().tablename,' where last_update>=',item().cdc_datetime)",
 										"type": "Expression"
 									}
 								},
@@ -58,7 +65,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"tablename": {
-											"value": "@item()",
+											"value": "@item().tablename",
 											"type": "Expression"
 										}
 									}
@@ -78,6 +85,35 @@
 							]
 						}
 					]
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "MySqlSource"
+					},
+					"dataset": {
+						"referenceName": "MySql_CM",
+						"type": "DatasetReference",
+						"parameters": {
+							"tablename": {
+								"value": "'control_table_details'",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
