@@ -104,13 +104,10 @@
 						"type": "MySqlSource"
 					},
 					"dataset": {
-						"referenceName": "MySql_CM",
+						"referenceName": "vmmysql",
 						"type": "DatasetReference",
 						"parameters": {
-							"tablename": {
-								"value": "'control_table_details'",
-								"type": "Expression"
-							}
+							"tablename": "control_table_details"
 						}
 					},
 					"firstRowOnly": false
