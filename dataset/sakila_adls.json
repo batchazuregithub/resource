@@ -19,7 +19,7 @@
 					"value": "@dataset().file",
 					"type": "Expression"
 				},
-				"folderPath": "rental",
+				"folderPath": "payment",
 				"fileSystem": "synapse"
 			},
 			"compressionCodec": "snappy"
