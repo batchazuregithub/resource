@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'MySql_sakila'"
 		},
+		"controltable_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'controltable'"
+		},
 		"synapse-001-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'synapse-001-WorkspaceDefaultSqlServer'",
@@ -27,10 +31,6 @@
 		"vmSql_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'vmSql'"
-		},
-		"controltable_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'controltable'"
 		},
 		"GitHub1_properties_typeProperties_username": {
 			"type": "string",
@@ -1036,7 +1036,7 @@
 										"storedProcedureParameters": {
 											"date": {
 												"value": {
-													"value": "@utcNow('yyyy-mm-dd')",
+													"value": "@utcNow('yyyy-MM-dd')",
 													"type": "Expression"
 												},
 												"type": "String"
@@ -1105,6 +1105,36 @@
 				"[concat(variables('workspaceId'), '/datasets/AzureSqlTable1')]",
 				"[concat(variables('workspaceId'), '/datasets/vmmysql')]",
 				"[concat(variables('workspaceId'), '/datasets/Parquet1')]",
+				"[concat(variables('workspaceId'), '/linkedServices/controltable')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "controltable",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "tablename",
+						"type": "varchar"
+					},
+					{
+						"name": "CDC_datetime",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "control_table_details"
+				}
+			},
+			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/controltable')]"
 			]
 		},
@@ -1283,6 +1313,25 @@
 				"type": "MySql",
 				"typeProperties": {
 					"connectionString": "[parameters('MySql_sakila_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/controltable')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('controltable_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "AutoResolveIntegrationRuntime",
@@ -1546,55 +1595,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/controltable')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('controltable_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/AzureSqlTable1')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "controltable",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "tablename",
-						"type": "varchar"
-					},
-					{
-						"name": "CDC_datetime",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "control_table_details"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/controltable')]"
 			]
 		}
 	]

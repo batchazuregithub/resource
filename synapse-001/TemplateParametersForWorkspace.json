@@ -14,13 +14,13 @@
 		"MySql_sakila_connectionString": {
 			"value": ""
 		},
+		"controltable_connectionString": {
+			"value": ""
+		},
 		"synapse-001-WorkspaceDefaultSqlServer_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-001.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"vmSql_connectionString": {
-			"value": ""
-		},
-		"controltable_connectionString": {
 			"value": ""
 		},
 		"GitHub1_properties_typeProperties_username": {
