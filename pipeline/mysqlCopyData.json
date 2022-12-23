@@ -109,7 +109,7 @@
 								"storedProcedureParameters": {
 									"date": {
 										"value": {
-											"value": "@utcNow('yyyy-mm-dd')",
+											"value": "@utcNow('yyyy-MM-dd')",
 											"type": "Expression"
 										},
 										"type": "String"
