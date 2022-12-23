@@ -1,0 +1,58 @@
+{
+	"name": "sakila_adls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-001-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"file": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
+				"folderPath": "rental",
+				"fileSystem": "synapse"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "rental_id",
+				"type": "INT32"
+			},
+			{
+				"name": "rental_date",
+				"type": "INT96"
+			},
+			{
+				"name": "inventory_id",
+				"type": "INT64"
+			},
+			{
+				"name": "customer_id",
+				"type": "INT32"
+			},
+			{
+				"name": "return_date",
+				"type": "INT96"
+			},
+			{
+				"name": "staff_id",
+				"type": "INT32"
+			},
+			{
+				"name": "last_update",
+				"type": "INT96"
+			}
+		]
+	}
+}
