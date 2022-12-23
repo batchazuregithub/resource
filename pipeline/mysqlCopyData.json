@@ -83,6 +83,49 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "Stored procedure1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy data1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[updatecontroltable]",
+								"storedProcedureParameters": {
+									"date": {
+										"value": {
+											"value": "@utcNow('yyyy-mm-dd')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"tablename": {
+										"value": {
+											"value": "@item().tablename",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "controltable",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
@@ -101,14 +144,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "MySqlSource"
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "vmmysql",
-						"type": "DatasetReference",
-						"parameters": {
-							"tablename": "control_table_details"
-						}
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
 				}
