@@ -2,7 +2,7 @@
 	"name": "SQL script 2",
 	"properties": {
 		"content": {
-			"query": "CREATE",
+			"query": "\ninsert into abc table\nSELECT\n    count( *)\nFROM\n    OPENROWSET(\n        BULK 'https://team001storage.dfs.core.windows.net/synapse/customer/data_83b299f7-6bba-4b34-b428-859137360867_46a96420-95ce-41ca-af28-79b1c42011f8.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]",
 			"metadata": {
 				"language": "sql"
 			},
