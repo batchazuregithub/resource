@@ -1728,7 +1728,27 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE",
+					"query": "\ninsert into abc table\nSELECT\n    count( *)\nFROM\n    OPENROWSET(\n        BULK 'https://team001storage.dfs.core.windows.net/synapse/customer/data_83b299f7-6bba-4b34-b428-859137360867_46a96420-95ce-41ca-af28-79b1c42011f8.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "practice_db",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 3')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT TOP 100 * FROM dbo.rental_trans\nGo",
 					"metadata": {
 						"language": "sql"
 					},
