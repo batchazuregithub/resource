@@ -1,8 +1,8 @@
 {
-	"name": "SQL script 1",
+	"name": "SQL script 2",
 	"properties": {
 		"content": {
-			"query": "SELECT count(*) FROM dbo.rental\nGo\n",
+			"query": "CREATE",
 			"metadata": {
 				"language": "sql"
 			},
