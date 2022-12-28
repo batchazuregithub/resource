@@ -1,0 +1,54 @@
+{
+	"name": "Parquet_CM_DF",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-001-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "employees",
+				"folderPath": "CM/for_CM",
+				"fileSystem": "synapse"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "employeeNumber",
+				"type": "INT32"
+			},
+			{
+				"name": "lastName",
+				"type": "UTF8"
+			},
+			{
+				"name": "firstName",
+				"type": "UTF8"
+			},
+			{
+				"name": "extension",
+				"type": "UTF8"
+			},
+			{
+				"name": "email",
+				"type": "UTF8"
+			},
+			{
+				"name": "officeCode",
+				"type": "UTF8"
+			},
+			{
+				"name": "reportsTo",
+				"type": "INT32"
+			},
+			{
+				"name": "jobTitle",
+				"type": "UTF8"
+			}
+		]
+	}
+}

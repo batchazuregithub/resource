@@ -2,23 +2,14 @@
 	"name": "Parquet_CM",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "synapse-001-WorkspaceDefaultStorage",
+			"referenceName": "AzureDataLakeStorage1_sink",
 			"type": "LinkedServiceReference"
-		},
-		"parameters": {
-			"file": {
-				"type": "string"
-			}
 		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@dataset().file",
-					"type": "Expression"
-				},
 				"folderPath": "CM/for_CM",
 				"fileSystem": "synapse"
 			},

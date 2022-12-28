@@ -1,0 +1,58 @@
+{
+	"name": "Parquet_cm_off_df",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-001-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "offices",
+				"folderPath": "CM/for_CM",
+				"fileSystem": "synapse"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "officeCode",
+				"type": "UTF8"
+			},
+			{
+				"name": "city",
+				"type": "UTF8"
+			},
+			{
+				"name": "phone",
+				"type": "UTF8"
+			},
+			{
+				"name": "addressLine1",
+				"type": "UTF8"
+			},
+			{
+				"name": "addressLine2",
+				"type": "UTF8"
+			},
+			{
+				"name": "state",
+				"type": "UTF8"
+			},
+			{
+				"name": "country",
+				"type": "UTF8"
+			},
+			{
+				"name": "postalCode",
+				"type": "UTF8"
+			},
+			{
+				"name": "territory",
+				"type": "UTF8"
+			}
+		]
+	}
+}

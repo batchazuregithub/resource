@@ -1,0 +1,82 @@
+{
+	"name": "Dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Parquet_CM_DF",
+						"type": "DatasetReference"
+					},
+					"name": "employees"
+				},
+				{
+					"dataset": {
+						"referenceName": "Parquet_cm_off_df",
+						"type": "DatasetReference"
+					},
+					"name": "offices"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Parquet_CM",
+						"type": "DatasetReference"
+					},
+					"name": "inner"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          employeeNumber as integer,",
+				"          lastName as string,",
+				"          firstName as string,",
+				"          extension as string,",
+				"          email as string,",
+				"          officeCode as string,",
+				"          reportsTo as integer,",
+				"          jobTitle as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> employees",
+				"source(output(",
+				"          officeCode as string,",
+				"          city as string,",
+				"          phone as string,",
+				"          addressLine1 as string,",
+				"          addressLine2 as string,",
+				"          state as string,",
+				"          country as string,",
+				"          postalCode as string,",
+				"          territory as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> offices",
+				"employees, offices join(employees@officeCode == offices@officeCode,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> inner"
+			]
+		}
+	}
+}
