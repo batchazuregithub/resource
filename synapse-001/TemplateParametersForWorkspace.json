@@ -5,6 +5,9 @@
 		"workspaceName": {
 			"value": "synapse-001"
 		},
+		"AzureDataLakeStorage1_sink_accountKey": {
+			"value": ""
+		},
 		"GitHub1_credential": {
 			"value": ""
 		},
@@ -22,6 +25,9 @@
 		},
 		"vmSql_connectionString": {
 			"value": ""
+		},
+		"AzureDataLakeStorage1_sink_properties_typeProperties_url": {
+			"value": "https://team001storage.dfs.core.windows.net/"
 		},
 		"GitHub1_properties_typeProperties_username": {
 			"value": "batchazuregithub"

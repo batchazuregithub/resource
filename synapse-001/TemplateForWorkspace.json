@@ -7,6 +7,10 @@
 			"metadata": "Workspace name",
 			"defaultValue": "synapse-001"
 		},
+		"AzureDataLakeStorage1_sink_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1_sink'"
+		},
 		"GitHub1_credential": {
 			"type": "secureString",
 			"metadata": "Secure string for 'credential' of 'GitHub1'"
@@ -32,6 +36,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'vmSql'"
 		},
+		"AzureDataLakeStorage1_sink_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://team001storage.dfs.core.windows.net/"
+		},
 		"GitHub1_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "batchazuregithub"
@@ -45,6 +53,54 @@
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"employees": {},
+									"offices": {},
+									"inner": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow1')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/copy_notebook')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
@@ -102,12 +158,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table1",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -169,12 +220,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table2",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -236,12 +282,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table3",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -303,12 +344,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table4",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -370,12 +406,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table5",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -437,12 +468,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table6",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -504,12 +530,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table7",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -571,12 +592,7 @@
 							{
 								"referenceName": "Parquet_CM",
 								"type": "DatasetReference",
-								"parameters": {
-									"file": {
-										"value": "@pipeline().parameters.table8",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					},
@@ -1401,29 +1417,142 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "synapse-001-WorkspaceDefaultStorage",
+					"referenceName": "AzureDataLakeStorage1_sink",
 					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"file": {
-						"type": "string"
-					}
 				},
 				"annotations": [],
 				"type": "Parquet",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().file",
-							"type": "Expression"
-						},
 						"folderPath": "CM/for_CM",
 						"fileSystem": "synapse"
 					},
 					"compressionCodec": "snappy"
 				},
 				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureDataLakeStorage1_sink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet_CM_DF')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synapse-001-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "employees",
+						"folderPath": "CM/for_CM",
+						"fileSystem": "synapse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "employeeNumber",
+						"type": "INT32"
+					},
+					{
+						"name": "lastName",
+						"type": "UTF8"
+					},
+					{
+						"name": "firstName",
+						"type": "UTF8"
+					},
+					{
+						"name": "extension",
+						"type": "UTF8"
+					},
+					{
+						"name": "email",
+						"type": "UTF8"
+					},
+					{
+						"name": "officeCode",
+						"type": "UTF8"
+					},
+					{
+						"name": "reportsTo",
+						"type": "INT32"
+					},
+					{
+						"name": "jobTitle",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synapse-001-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet_cm_off_df')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synapse-001-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "offices",
+						"folderPath": "CM/for_CM",
+						"fileSystem": "synapse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "officeCode",
+						"type": "UTF8"
+					},
+					{
+						"name": "city",
+						"type": "UTF8"
+					},
+					{
+						"name": "phone",
+						"type": "UTF8"
+					},
+					{
+						"name": "addressLine1",
+						"type": "UTF8"
+					},
+					{
+						"name": "addressLine2",
+						"type": "UTF8"
+					},
+					{
+						"name": "state",
+						"type": "UTF8"
+					},
+					{
+						"name": "country",
+						"type": "UTF8"
+					},
+					{
+						"name": "postalCode",
+						"type": "UTF8"
+					},
+					{
+						"name": "territory",
+						"type": "UTF8"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/synapse-001-WorkspaceDefaultStorage')]"
@@ -1518,6 +1647,29 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/vmSql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureDataLakeStorage1_sink')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_sink_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_sink_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -1693,6 +1845,95 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow1')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Parquet_CM_DF",
+								"type": "DatasetReference"
+							},
+							"name": "employees"
+						},
+						{
+							"dataset": {
+								"referenceName": "Parquet_cm_off_df",
+								"type": "DatasetReference"
+							},
+							"name": "offices"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Parquet_CM",
+								"type": "DatasetReference"
+							},
+							"name": "inner"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          employeeNumber as integer,",
+						"          lastName as string,",
+						"          firstName as string,",
+						"          extension as string,",
+						"          email as string,",
+						"          officeCode as string,",
+						"          reportsTo as integer,",
+						"          jobTitle as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> employees",
+						"source(output(",
+						"          officeCode as string,",
+						"          city as string,",
+						"          phone as string,",
+						"          addressLine1 as string,",
+						"          addressLine2 as string,",
+						"          state as string,",
+						"          country as string,",
+						"          postalCode as string,",
+						"          territory as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> offices",
+						"employees, offices join(employees@officeCode == offices@officeCode,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> inner"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/Parquet_CM_DF')]",
+				"[concat(variables('workspaceId'), '/datasets/Parquet_cm_off_df')]",
+				"[concat(variables('workspaceId'), '/datasets/Parquet_CM')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
@@ -1755,6 +1996,26 @@
 					"currentConnection": {
 						"databaseName": "practice_db",
 						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 4')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'synapse_team001storage_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [synapse_team001storage_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://synapse@team001storage.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE rental (\n\t[rental_id] int,\n\t[rental_date] datetime2(7),\n\t[inventory_id] bigint,\n\t[customer_id] int,\n\t[return_date] datetime2(7),\n\t[staff_id] int,\n\t[last_update] datetime2(7)\n\t)\n\tWITH (\n\tLOCATION = 'rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet',\n\tDATA_SOURCE = [synapse_team001storage_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.rental\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synpasededicated",
+						"poolName": "synpasededicated"
 					},
 					"resultLimit": 5000
 				},
@@ -1868,6 +2129,43 @@
 			"location": "eastus"
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/synapsepractice')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 3,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.2",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synpasededicated')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/default')]",
 			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks",
 			"apiVersion": "2019-06-01-preview",
@@ -1915,35 +2213,6 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/synpasededicated')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/SQL script 4')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'synapse_team001storage_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [synapse_team001storage_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://synapse@team001storage.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE rental (\n\t[rental_id] int,\n\t[rental_date] datetime2(7),\n\t[inventory_id] bigint,\n\t[customer_id] int,\n\t[return_date] datetime2(7),\n\t[staff_id] int,\n\t[last_update] datetime2(7)\n\t)\n\tWITH (\n\tLOCATION = 'rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet',\n\tDATA_SOURCE = [synapse_team001storage_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\n\nSELECT TOP 100 * FROM dbo.rental\nGO",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "synpasededicated",
-						"poolName": "synpasededicated"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
 		}
 	]
 }
