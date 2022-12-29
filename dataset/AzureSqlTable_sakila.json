@@ -1,0 +1,27 @@
+{
+	"name": "AzureSqlTable_sakila",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "controltable",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "tablename",
+				"type": "varchar"
+			},
+			{
+				"name": "inserted_date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "sakila_tables_list"
+		}
+	}
+}

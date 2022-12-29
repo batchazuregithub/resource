@@ -1,0 +1,23 @@
+{
+	"name": "MySqlTable3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MySql_sakila",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "MySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
