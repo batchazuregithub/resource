@@ -102,10 +102,6 @@
 										"storageaccount": {
 											"value": "@pipeline().parameters.storageaccount",
 											"type": "Expression"
-										},
-										"folderpath": {
-											"value": "@concat(pipeline().parameters.folderpath,'/',pipeline().parameters.tablename)",
-											"type": "Expression"
 										}
 									}
 								}
