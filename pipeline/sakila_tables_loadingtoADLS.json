@@ -102,6 +102,10 @@
 										"storageaccount": {
 											"value": "@pipeline().parameters.storageaccount",
 											"type": "Expression"
+										},
+										"filename": {
+											"value": "@pipeline().parameters.tablename",
+											"type": "Expression"
 										}
 									}
 								}
@@ -118,10 +122,6 @@
 			"storageaccount": {
 				"type": "string",
 				"defaultValue": "team001storage"
-			},
-			"folderpath": {
-				"type": "string",
-				"defaultValue": "synapse"
 			}
 		},
 		"annotations": []
