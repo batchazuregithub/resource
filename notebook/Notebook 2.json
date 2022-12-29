@@ -17,15 +17,15 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0303f030-018c-45e5-addb-3729850ef14b"
+				"spark.autotune.trackingId": "9468b2a5-8bb8-4170-baab-0aa7da02d6f9"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
 			"enableDebugMode": false,
 			"kernelspec": {
-				"name": "synapse_sparksql",
-				"display_name": "Synapse SQL"
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "sql"
@@ -94,9 +94,58 @@
 					"collapsed": false
 				},
 				"source": [
-					"SELECT * FROM RENTAL"
+					"SELECT * FROM payment"
 				],
-				"execution_count": 10
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"use sakila_db;\r\n",
+					"CREATE EXTERNAL TABLE actor USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/actor/';\r\n",
+					"    CREATE EXTERNAL TABLE address USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/address/';\r\n",
+					"    CREATE EXTERNAL TABLE category USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/category/';\r\n",
+					"    CREATE EXTERNAL TABLE city USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/city/';\r\n",
+					"    CREATE EXTERNAL TABLE country USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/country/';\r\n",
+					"    CREATE EXTERNAL TABLE customer USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/customer/';\r\n",
+					"    CREATE EXTERNAL TABLE film USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/film/';\r\n",
+					"    CREATE EXTERNAL TABLE film_actor USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/film_actor/';\r\n",
+					"    CREATE EXTERNAL TABLE film_category USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/film_category/';\r\n",
+					"    CREATE EXTERNAL TABLE film_text USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/film_text/';\r\n",
+					"    CREATE EXTERNAL TABLE inventory USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/inventory/';\r\n",
+					"    CREATE EXTERNAL TABLE language USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/language/';\r\n",
+					"    CREATE EXTERNAL TABLE payment USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/payment/';\r\n",
+					"    CREATE EXTERNAL TABLE staff USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/staff/';\r\n",
+					"    CREATE EXTERNAL TABLE store USING PARQUET\r\n",
+					"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/store/';"
+				],
+				"execution_count": 2
 			}
 		]
 	}
