@@ -59,7 +59,7 @@
 								"value": "@pipeline().parameters.storageaccount",
 								"type": "Expression"
 							},
-							"filename": {
+							"folderpath": {
 								"value": "@pipeline().parameters.tablename",
 								"type": "Expression"
 							}

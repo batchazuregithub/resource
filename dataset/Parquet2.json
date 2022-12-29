@@ -12,7 +12,7 @@
 			"storageaccount": {
 				"type": "string"
 			},
-			"filename": {
+			"folderpath": {
 				"type": "string"
 			}
 		},
@@ -21,11 +21,11 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@dataset().filename",
+				"folderPath": {
+					"value": "@dataset().folderpath",
 					"type": "Expression"
 				},
-				"folderPath": {
+				"fileSystem": {
 					"value": "@dataset().containername",
 					"type": "Expression"
 				}
