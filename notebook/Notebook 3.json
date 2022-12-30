@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d18e876f-fc9c-4419-bd6a-b8eeae57dfae"
+				"spark.autotune.trackingId": "64b704c0-edfa-43d3-8015-b5b383e485d2"
 			}
 		},
 		"metadata": {
@@ -163,14 +163,14 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"INSERT into rental_trans\r\n",
+					"INSERT overwrite  rental_trans\r\n",
 					"select * from \r\n",
 					"(select *, row_number() over \r\n",
 					"(partition by rental_id order by last_update) rnum \r\n",
 					"from \r\n",
 					"sakila_db.rental) where rnum=1"
 				],
-				"execution_count": 27
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
@@ -194,7 +194,7 @@
 					"REFRESH TABLE rental_trans;\r\n",
 					"select * from rental_trans where rental_id=2;"
 				],
-				"execution_count": 28
+				"execution_count": 31
 			}
 		]
 	}
