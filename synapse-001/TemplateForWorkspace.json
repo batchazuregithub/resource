@@ -2432,7 +2432,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "738743ce-dde1-410b-bf8e-d92f1377dfbd"
+						"spark.autotune.trackingId": "0f84643b-34c6-4186-bd22-bb3541907253"
 					}
 				},
 				"metadata": {
@@ -2490,6 +2490,7 @@
 						},
 						"source": [
 							"use sakila_db;\r\n",
+							"drop table rental;\r\n",
 							"create external table rental USING PARQUET \r\n",
 							"location 'abfss://synapse@team001storage.dfs.core.windows.net/rental/'"
 						],
@@ -2596,6 +2597,10 @@
 			"properties": {
 				"nbformat": 4,
 				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "synapsepractice",
+					"type": "BigDataPoolReference"
+				},
 				"sessionProperties": {
 					"driverMemory": "28g",
 					"driverCores": 4,
@@ -2606,7 +2611,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "999c0ecb-16fe-4ef4-b449-33a099fca94a"
+						"spark.autotune.trackingId": "d969347d-588e-46a5-89da-546a1d34c868"
 					}
 				},
 				"metadata": {
@@ -2614,21 +2619,209 @@
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
-						"display_name": "python"
+						"display_name": "Synapse PySpark"
 					},
 					"language_info": {
 						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/synapsepractice",
+						"name": "synapsepractice",
+						"type": "Spark",
+						"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/synapsepractice",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.2",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
 						"source": [
 							"%%pyspark\r\n",
 							"df = spark.read.load('abfss://synapse@team001storage.dfs.core.windows.net/rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet', format='parquet')\r\n",
 							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"\r\n",
+							"--create external table rental USING PARQUET \r\n",
+							"--location 'abfss://synapse@team001storage.dfs.core.windows.net/rental/*'\r\n",
+							"select count(*) from sakila_db.rental;"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"INSERT OVERWRITE DIRECTORY 'abfss://synapse@team001storage.dfs.core.windows.net/rental_trans/'\r\n",
+							"using PARQUET\r\n",
+							"select * from \r\n",
+							"(select *, row_number() over \r\n",
+							"(partition by rental_id order by last_update) rnum \r\n",
+							"from \r\n",
+							"sakila_db.rental) where rnum=1\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 18
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"create external table if not exists  rental_trans USING PARQUET \r\n",
+							"location 'abfss://synapse@team001storage.dfs.core.windows.net/rental_trans/*'"
+						],
+						"outputs": [],
+						"execution_count": 21
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"INSERT overwrite  rental_trans\r\n",
+							"select * from \r\n",
+							"(select *, row_number() over \r\n",
+							"(partition by rental_id order by last_update) rnum \r\n",
+							"from \r\n",
+							"sakila_db.rental) where rnum=1"
+						],
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"REFRESH TABLE rental_trans;\r\n",
+							"select * from rental_trans where rental_id=2;"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"\r\n",
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://synapse@team001storage.dfs.core.windows.net/rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet', format='parquet')\r\n",
+							"\r\n",
+							"df1= df.filter(\"rental_id\"=\"2\")\r\n",
+							"\r\n",
+							"df1.write.mode(\"append\")\r\n",
+							"df.write.mode(\"overwrite\").saveAsTable(\"default.YourTableName\")"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -2644,6 +2837,10 @@
 			"properties": {
 				"nbformat": 4,
 				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "ABC",
+					"type": "BigDataPoolReference"
+				},
 				"sessionProperties": {
 					"driverMemory": "28g",
 					"driverCores": 4,
@@ -2654,7 +2851,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "5dc6897f-677d-4253-bdbe-e432840d4f0b"
+						"spark.autotune.trackingId": "80a1cabb-7124-4253-835f-c06b0d5d568b"
 					}
 				},
 				"metadata": {
@@ -2662,21 +2859,67 @@
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
-						"display_name": "python"
+						"display_name": "Synapse PySpark"
 					},
 					"language_info": {
 						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/ABC",
+						"name": "ABC",
+						"type": "Spark",
+						"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ABC",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.2",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							}
+						},
 						"source": [
 							"%%pyspark\r\n",
 							"df = spark.read.load('abfss://synapse@team001storage.dfs.core.windows.net/rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet', format='parquet')\r\n",
+							"\r\n",
+							"df1= df.filter\r\n",
+							"\r\n",
 							"df.write.mode(\"overwrite\").saveAsTable(\"default.YourTableName\")"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"\r\n",
+							"a = spark.read.load()"
 						],
 						"outputs": [],
 						"execution_count": null
