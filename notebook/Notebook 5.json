@@ -1,0 +1,107 @@
+{
+	"name": "Notebook 5",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "synapsepractice",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "739c01e0-21bc-4bed-a25b-06ec00f0c3d5"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_sparksql",
+				"display_name": "Synapse SQL"
+			},
+			"language_info": {
+				"name": "sql"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/synapsepractice",
+				"name": "synapsepractice",
+				"type": "Spark",
+				"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/synapsepractice",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"use sakila_db;\r\n",
+					"select r.rental_id,rental_date,i.inventory_id,f.film_id,f.title,a.film_id,a.actor_id,c.first_name,c.last_name from\r\n",
+					"rental as r\r\n",
+					"left outer join\r\n",
+					"inventory i on(r.inventory_id=i.inventory_id)\r\n",
+					"inner join\r\n",
+					"film f on(i.film_id=f.film_id)\r\n",
+					"left join \r\n",
+					"film_actor a on(f.film_id=a.film_id)\r\n",
+					"inner join\r\n",
+					"actor c on(a.actor_id=c.actor_id)\r\n",
+					";"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"use sakila_db;\r\n",
+					"\r\n",
+					"select count(amount),f.title from payment p\r\n",
+					"inner join rental r on(r.rental_id=p.rental_id)\r\n",
+					"left join inventory i on(i.inventory_id=r.inventory_id)\r\n",
+					"inner join film f on(f.film_id=i.film_id)\r\n",
+					"group by f.title"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
