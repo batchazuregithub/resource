@@ -1,5 +1,5 @@
 {
-	"name": "Notebook 3",
+	"name": "Notebook 4",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -13,7 +13,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "986dedd4-d9dc-4cba-8f75-2ece517edc05"
+				"spark.autotune.trackingId": "b158d772-91e4-40da-9f0d-a9085dfe7c27"
 			}
 		},
 		"metadata": {
@@ -34,7 +34,7 @@
 				"source": [
 					"%%pyspark\r\n",
 					"df = spark.read.load('abfss://synapse@team001storage.dfs.core.windows.net/rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet', format='parquet')\r\n",
-					"display(df.limit(10))"
+					"df.write.mode(\"overwrite\").saveAsTable(\"default.YourTableName\")"
 				],
 				"execution_count": null
 			}
