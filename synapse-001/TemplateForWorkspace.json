@@ -2432,7 +2432,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "9468b2a5-8bb8-4170-baab-0aa7da02d6f9"
+						"spark.autotune.trackingId": "738743ce-dde1-410b-bf8e-d92f1377dfbd"
 					}
 				},
 				"metadata": {
@@ -2457,7 +2457,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2493,7 +2494,7 @@
 							"location 'abfss://synapse@team001storage.dfs.core.windows.net/rental/'"
 						],
 						"outputs": [],
-						"execution_count": 9
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
@@ -2513,7 +2514,7 @@
 							"SELECT * FROM payment"
 						],
 						"outputs": [],
-						"execution_count": 4
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -2555,7 +2556,7 @@
 							"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/inventory/';\r\n",
 							"    CREATE EXTERNAL TABLE language USING PARQUET\r\n",
 							"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/language/';\r\n",
-							"    CREATE EXTERNAL TABLE payment USING PARQUET\r\n",
+							"    CREATE  EXTERNAL TABLE IF NOT EXISTS payment USING PARQUET\r\n",
 							"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/payment/';\r\n",
 							"    CREATE EXTERNAL TABLE staff USING PARQUET\r\n",
 							"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/staff/';\r\n",
@@ -2563,7 +2564,26 @@
 							"LOCATION 'abfss://synapse@team001storage.dfs.core.windows.net/store/';"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
 					}
 				]
 			},
@@ -2586,7 +2606,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "986dedd4-d9dc-4cba-8f75-2ece517edc05"
+						"spark.autotune.trackingId": "999c0ecb-16fe-4ef4-b449-33a099fca94a"
 					}
 				},
 				"metadata": {
@@ -2604,6 +2624,7 @@
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"%%pyspark\r\n",
 							"df = spark.read.load('abfss://synapse@team001storage.dfs.core.windows.net/rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet', format='parquet')\r\n",
@@ -2633,7 +2654,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b158d772-91e4-40da-9f0d-a9085dfe7c27"
+						"spark.autotune.trackingId": "5dc6897f-677d-4253-bdbe-e432840d4f0b"
 					}
 				},
 				"metadata": {
@@ -2651,6 +2672,7 @@
 				"cells": [
 					{
 						"cell_type": "code",
+						"metadata": {},
 						"source": [
 							"%%pyspark\r\n",
 							"df = spark.read.load('abfss://synapse@team001storage.dfs.core.windows.net/rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet', format='parquet')\r\n",
