@@ -52,13 +52,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table1",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -119,13 +113,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table2",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -186,13 +174,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table3",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -253,13 +235,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table4",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -320,13 +296,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table5",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -387,13 +357,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table6",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -454,13 +418,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table7",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
@@ -521,13 +479,7 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet_CM",
-						"type": "DatasetReference",
-						"parameters": {
-							"file": {
-								"value": "@pipeline().parameters.table8",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			},
