@@ -4,7 +4,7 @@
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
-			"referenceName": "synapsepractice",
+			"referenceName": "ABC",
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a5b21f40-23c4-4dd0-b883-8ffe73a8bf3d"
+				"spark.autotune.trackingId": "2a1965bd-db2a-47f7-8f4b-7f589516345b"
 			}
 		},
 		"metadata": {
@@ -31,10 +31,10 @@
 				"name": "sql"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/synapsepractice",
-				"name": "synapsepractice",
+				"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/ABC",
+				"name": "ABC",
 				"type": "Spark",
-				"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/synapsepractice",
+				"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ABC",
 				"auth": {
 					"type": "AAD",
 					"authResource": "https://dev.azuresynapse.net"
@@ -54,9 +54,10 @@
 					"collapsed": false
 				},
 				"source": [
-					"Create DATABASE sakila_db"
+					"use default;\r\n",
+					"show tables;"
 				],
-				"execution_count": 1
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
