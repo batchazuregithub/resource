@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f5b2b6e3-474f-480d-8de6-e7034cc06c18"
+				"spark.autotune.trackingId": "a5b21f40-23c4-4dd0-b883-8ffe73a8bf3d"
 			}
 		},
 		"metadata": {
@@ -74,6 +74,7 @@
 				},
 				"source": [
 					"use sakila_db;\r\n",
+					"drop table rental;\r\n",
 					"create external table rental USING PARQUET \r\n",
 					"location 'abfss://synapse@team001storage.dfs.core.windows.net/rental/'"
 				],

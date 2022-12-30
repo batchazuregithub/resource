@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1a744071-db4b-48a9-9798-b384c357103b"
+				"spark.autotune.trackingId": "d18e876f-fc9c-4419-bd6a-b8eeae57dfae"
 			}
 		},
 		"metadata": {
@@ -108,14 +108,93 @@
 				},
 				"source": [
 					"%%sql\r\n",
-					"INSERT into DIRECTORY 'abfss://synapse@team001storage.dfs.core.windows.net/rental_trans/'\r\n",
-					"using\r\n",
-					"select * from (select *, row_number() over (partition by rental_id order by last_update) rnum from \r\n",
-					"sakila_db.rental) \r\n",
-					"stored as 'PARQUET' \r\n",
+					"INSERT OVERWRITE DIRECTORY 'abfss://synapse@team001storage.dfs.core.windows.net/rental_trans/'\r\n",
+					"using PARQUET\r\n",
+					"select * from \r\n",
+					"(select *, row_number() over \r\n",
+					"(partition by rental_id order by last_update) rnum \r\n",
+					"from \r\n",
+					"sakila_db.rental) where rnum=1\r\n",
+					"\r\n",
 					""
 				],
-				"execution_count": 13
+				"execution_count": 18
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"create external table if not exists  rental_trans USING PARQUET \r\n",
+					"location 'abfss://synapse@team001storage.dfs.core.windows.net/rental_trans/*'"
+				],
+				"execution_count": 21
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"INSERT into rental_trans\r\n",
+					"select * from \r\n",
+					"(select *, row_number() over \r\n",
+					"(partition by rental_id order by last_update) rnum \r\n",
+					"from \r\n",
+					"sakila_db.rental) where rnum=1"
+				],
+				"execution_count": 27
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"REFRESH TABLE rental_trans;\r\n",
+					"select * from rental_trans where rental_id=2;"
+				],
+				"execution_count": 28
 			}
 		]
 	}
