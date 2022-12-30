@@ -26,6 +26,9 @@
 		"vmSql_connectionString": {
 			"value": ""
 		},
+		"CM_sql_connectionString": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_sink_properties_typeProperties_url": {
 			"value": "https://team001storage.dfs.core.windows.net/"
 		},
