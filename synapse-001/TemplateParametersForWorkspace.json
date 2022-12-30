@@ -8,6 +8,9 @@
 		"AzureDataLakeStorage1_sink_accountKey": {
 			"value": ""
 		},
+		"CM_sql_connectionString": {
+			"value": ""
+		},
 		"GitHub1_credential": {
 			"value": ""
 		},
@@ -24,9 +27,6 @@
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-001.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"vmSql_connectionString": {
-			"value": ""
-		},
-		"CM_sql_connectionString": {
 			"value": ""
 		},
 		"AzureDataLakeStorage1_sink_properties_typeProperties_url": {

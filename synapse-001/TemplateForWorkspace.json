@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1_sink'"
 		},
+		"CM_sql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'CM_sql'"
+		},
 		"GitHub1_credential": {
 			"type": "secureString",
 			"metadata": "Secure string for 'credential' of 'GitHub1'"
@@ -35,10 +39,6 @@
 		"vmSql_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'vmSql'"
-		},
-		"CM_sql_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'CM_sql'"
 		},
 		"AzureDataLakeStorage1_sink_properties_typeProperties_url": {
 			"type": "string",
@@ -989,6 +989,178 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/dynamic_CM_HC')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "CM_mysql_adls",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "MySqlSource"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "MySql_CM",
+								"type": "DatasetReference",
+								"parameters": {
+									"tablename": {
+										"value": "@pipeline().parameters.table",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Parquet_dyn_cm",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "synapse",
+									"storageaccount": {
+										"value": "@pipeline().parameters.storageaccount",
+										"type": "Expression"
+									},
+									"folderpath": {
+										"value": "@pipeline().parameters.table",
+										"type": "Expression"
+									},
+									"file": {
+										"value": "@pipeline().parameters.table",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "CM_adls_sql",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CM_mysql_adls",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Parquet_dyn_cm",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "synapse",
+									"storageaccount": {
+										"value": "@pipeline().parameters.storageaccount",
+										"type": "Expression"
+									},
+									"folderpath": {
+										"value": "@pipeline().parameters.table",
+										"type": "Expression"
+									},
+									"file": {
+										"value": "@pipeline().parameters.table",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSql_adls",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"table": {
+						"type": "string",
+						"defaultValue": "employees"
+					},
+					"storageaccount": {
+						"type": "string",
+						"defaultValue": "team001storage"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/MySql_CM')]",
+				"[concat(variables('workspaceId'), '/datasets/Parquet_dyn_cm')]",
+				"[concat(variables('workspaceId'), '/datasets/AzureSql_adls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/mysqlCopyData')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -1498,6 +1670,27 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSql_adls')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "CM_sql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "CM",
+					"table": "employees"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/CM_sql')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/MySqlTable2')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -1804,6 +1997,55 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet_dyn_cm')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synapse-001-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string"
+					},
+					"storageaccount": {
+						"type": "string"
+					},
+					"folderpath": {
+						"type": "string"
+					},
+					"file": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folderpath",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synapse-001-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/sakila_adls')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -1907,6 +2149,25 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureDataLakeStorage1_sink_accountKey')]"
 					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CM_sql')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('CM_sql_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "AutoResolveIntegrationRuntime",
@@ -2405,7 +2666,7 @@
 				"nbformat": 4,
 				"nbformat_minor": 2,
 				"bigDataPool": {
-					"referenceName": "synapsepractice",
+					"referenceName": "ABC",
 					"type": "BigDataPoolReference"
 				},
 				"sessionProperties": {
@@ -2418,24 +2679,24 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "a5b21f40-23c4-4dd0-b883-8ffe73a8bf3d"
+						"spark.autotune.trackingId": "02218f2e-d6ae-46b1-8271-1f2ce7a3ddce"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
 					"enableDebugMode": false,
 					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "Synapse PySpark"
+						"name": "synapse_sparksql",
+						"display_name": "sql"
 					},
 					"language_info": {
 						"name": "sql"
 					},
 					"a365ComputeOptions": {
-						"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/synapsepractice",
-						"name": "synapsepractice",
+						"id": "/subscriptions/67b16e10-2c63-46ce-a78d-cfbfc72ccd35/resourceGroups/Azure-Resource-001/providers/Microsoft.Synapse/workspaces/synapse-001/bigDataPools/ABC",
+						"name": "ABC",
 						"type": "Spark",
-						"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/synapsepractice",
+						"endpoint": "https://synapse-001.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ABC",
 						"auth": {
 							"type": "AAD",
 							"authResource": "https://dev.azuresynapse.net"
@@ -2443,7 +2704,8 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2454,10 +2716,11 @@
 							"collapsed": false
 						},
 						"source": [
-							"Create DATABASE sakila_db"
+							"use default;\r\n",
+							"show tables;"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -3020,267 +3283,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/dynamic_CM_HC')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "CM_mysql_adls",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "MySqlSource"
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "MySql_CM",
-								"type": "DatasetReference",
-								"parameters": {
-									"tablename": {
-										"value": "@pipeline().parameters.table",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Parquet_dyn_cm",
-								"type": "DatasetReference",
-								"parameters": {
-									"container": "synapse",
-									"storageaccount": {
-										"value": "@pipeline().parameters.storageaccount",
-										"type": "Expression"
-									},
-									"folderpath": {
-										"value": "@pipeline().parameters.table",
-										"type": "Expression"
-									},
-									"file": {
-										"value": "@pipeline().parameters.table",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "CM_adls_sql",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CM_mysql_adls",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ParquetSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Parquet_dyn_cm",
-								"type": "DatasetReference",
-								"parameters": {
-									"container": "synapse",
-									"storageaccount": {
-										"value": "@pipeline().parameters.storageaccount",
-										"type": "Expression"
-									},
-									"folderpath": {
-										"value": "@pipeline().parameters.table",
-										"type": "Expression"
-									},
-									"file": {
-										"value": "@pipeline().parameters.table",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureSql_adls",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"table": {
-						"type": "string",
-						"defaultValue": "employees"
-					},
-					"storageaccount": {
-						"type": "string",
-						"defaultValue": "team001storage"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/MySql_CM')]",
-				"[concat(variables('workspaceId'), '/datasets/Parquet_dyn_cm')]",
-				"[concat(variables('workspaceId'), '/datasets/AzureSql_adls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Parquet_dyn_cm')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "synapse-001-WorkspaceDefaultStorage",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"container": {
-						"type": "string"
-					},
-					"storageaccount": {
-						"type": "string"
-					},
-					"folderpath": {
-						"type": "string"
-					},
-					"file": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().file",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().folderpath",
-							"type": "Expression"
-						},
-						"fileSystem": {
-							"value": "@dataset().container",
-							"type": "Expression"
-						}
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/synapse-001-WorkspaceDefaultStorage')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/CM_sql')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('CM_sql_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/AzureSql_adls')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "CM_sql",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "CM",
-					"table": "employees"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/CM_sql')]"
 			]
 		}
 	]
