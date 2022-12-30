@@ -1,0 +1,16 @@
+{
+	"name": "AzureSql_adls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CM_sql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "CM",
+			"table": "employees"
+		}
+	}
+}
