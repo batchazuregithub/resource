@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "64b704c0-edfa-43d3-8015-b5b383e485d2"
+				"spark.autotune.trackingId": "9c7509f1-b4e8-47c6-b4f7-42e69f225a3d"
 			}
 		},
 		"metadata": {
@@ -194,7 +194,36 @@
 					"REFRESH TABLE rental_trans;\r\n",
 					"select * from rental_trans where rental_id=2;"
 				],
-				"execution_count": 31
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"\r\n",
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://synapse@team001storage.dfs.core.windows.net/rental/data_07e36389-9125-4388-ab9c-5d3cf46fb387_0bcf6f4b-2012-4dba-bb76-aac558461ed4.parquet', format='parquet')\r\n",
+					"\r\n",
+					"df1= df.filter(\"rental_id\"=\"2\")\r\n",
+					"\r\n",
+					"df1.write.mode(\"append\")\r\n",
+					"df.write.mode(\"overwrite\").saveAsTable(\"default.YourTableName\")"
+				],
+				"execution_count": null
 			}
 		]
 	}
