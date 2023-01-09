@@ -58,6 +58,58 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "film_rental",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"payment": {},
+									"rental": {},
+									"inventory": {},
+									"film": {},
+									"filmcategory": {},
+									"category": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/film_rental')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/copy_notebook')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -1997,6 +2049,60 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet_df_fR')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synapse-001-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "dataflow",
+						"fileSystem": "synapse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "orderNumber",
+						"type": "INT32"
+					},
+					{
+						"name": "orderDate",
+						"type": "INT96"
+					},
+					{
+						"name": "requiredDate",
+						"type": "INT96"
+					},
+					{
+						"name": "shippedDate",
+						"type": "INT96"
+					},
+					{
+						"name": "status",
+						"type": "UTF8"
+					},
+					{
+						"name": "comments",
+						"type": "UTF8"
+					},
+					{
+						"name": "customerNumber",
+						"type": "INT32"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synapse-001-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Parquet_dyn_cm')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -2449,6 +2555,206 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/film_rental')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "payment"
+						},
+						{
+							"name": "rental"
+						},
+						{
+							"name": "inventory"
+						},
+						{
+							"name": "film"
+						},
+						{
+							"name": "filmcategory"
+						},
+						{
+							"name": "category"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Parquet_df_fR",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "join3"
+						},
+						{
+							"name": "join4"
+						},
+						{
+							"name": "join5"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          payment_id as integer,",
+						"          customer_id as integer,",
+						"          staff_id as integer,",
+						"          rental_id as integer,",
+						"          amount as decimal(38,18),",
+						"          payment_date as timestamp,",
+						"          last_update as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     store: 'synapse',",
+						"     databaseType: 'spark',",
+						"     format: 'table',",
+						"     database: 'sakila_db',",
+						"     tableName: 'payment') ~> payment",
+						"source(output(",
+						"          rental_id as integer,",
+						"          rental_date as timestamp,",
+						"          inventory_id as long,",
+						"          customer_id as integer,",
+						"          return_date as timestamp,",
+						"          staff_id as integer,",
+						"          last_update as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     store: 'synapse',",
+						"     databaseType: 'spark',",
+						"     format: 'table',",
+						"     database: 'sakila_db',",
+						"     tableName: 'rental') ~> rental",
+						"source(output(",
+						"          inventory_id as long,",
+						"          film_id as integer,",
+						"          store_id as integer,",
+						"          last_update as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     store: 'synapse',",
+						"     databaseType: 'spark',",
+						"     format: 'table',",
+						"     database: 'sakila_db',",
+						"     tableName: 'inventory') ~> inventory",
+						"source(output(",
+						"          film_id as integer,",
+						"          title as string,",
+						"          description as string,",
+						"          release_year as integer,",
+						"          language_id as integer,",
+						"          original_language_id as integer,",
+						"          rental_duration as integer,",
+						"          rental_rate as decimal(38,18),",
+						"          length as integer,",
+						"          replacement_cost as decimal(38,18),",
+						"          rating as string,",
+						"          special_features as string,",
+						"          last_update as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     store: 'synapse',",
+						"     databaseType: 'spark',",
+						"     format: 'table',",
+						"     database: 'sakila_db',",
+						"     tableName: 'film') ~> film",
+						"source(output(",
+						"          film_id as integer,",
+						"          category_id as integer,",
+						"          last_update as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     store: 'synapse',",
+						"     databaseType: 'spark',",
+						"     format: 'table',",
+						"     database: 'sakila_db',",
+						"     tableName: 'film_category') ~> filmcategory",
+						"source(output(",
+						"          category_id as integer,",
+						"          name as string,",
+						"          last_update as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     store: 'synapse',",
+						"     databaseType: 'spark',",
+						"     format: 'table',",
+						"     database: 'sakila_db',",
+						"     tableName: 'category') ~> category",
+						"payment, rental join(payment@rental_id == rental@rental_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, inventory join(rental@inventory_id == inventory@inventory_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2, film join(inventory@film_id == film@film_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join3",
+						"join3, filmcategory join(film@film_id == filmcategory@film_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join4",
+						"join4, category join(filmcategory@category_id == category@category_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join5",
+						"join5 aggregate(groupBy(name = film@film_id),",
+						"     column1 = count(amount),",
+						"          column2 = sum(amount)) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          orderNumber as integer,",
+						"          orderDate as timestamp,",
+						"          requiredDate as timestamp,",
+						"          shippedDate as timestamp,",
+						"          status as string,",
+						"          comments as string,",
+						"          customerNumber as integer",
+						"     ),",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/Parquet_df_fR')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
@@ -2559,15 +2865,15 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "85539d97-c291-4e85-b631-7e2244d2d25b"
+						"spark.autotune.trackingId": "9dd5bfb3-4e1e-41d9-9873-4203c7e03fe1"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
 					"enableDebugMode": false,
 					"kernelspec": {
-						"name": "synapse_sparksql",
-						"display_name": "sql"
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
 					},
 					"language_info": {
 						"name": "sql"
@@ -2584,8 +2890,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2680,15 +2985,15 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4abb72c9-b69b-465f-95d4-0187d81a8fbc"
+						"spark.autotune.trackingId": "2a1965bd-db2a-47f7-8f4b-7f589516345b"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
 					"enableDebugMode": false,
 					"kernelspec": {
-						"name": "synapse_sparksql",
-						"display_name": "sql"
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
 					},
 					"language_info": {
 						"name": "sql"
@@ -2705,8 +3010,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2860,7 +3164,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c8f16e26-2085-40ef-b5cd-4014e0a1ac68"
+						"spark.autotune.trackingId": "8fb3deb3-0ac9-426c-adeb-67fb9dba1984"
 					}
 				},
 				"metadata": {
@@ -2885,8 +3189,7 @@
 						"sparkVersion": "3.2",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
