@@ -1,0 +1,170 @@
+{
+	"name": "film_rental",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "payment"
+				},
+				{
+					"name": "rental"
+				},
+				{
+					"name": "inventory"
+				},
+				{
+					"name": "film"
+				},
+				{
+					"name": "filmcategory"
+				},
+				{
+					"name": "category"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "join4"
+				},
+				{
+					"name": "join5"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          payment_id as integer,",
+				"          customer_id as integer,",
+				"          staff_id as integer,",
+				"          rental_id as integer,",
+				"          amount as decimal(38,18),",
+				"          payment_date as timestamp,",
+				"          last_update as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     store: 'synapse',",
+				"     databaseType: 'spark',",
+				"     format: 'table',",
+				"     database: 'sakila_db',",
+				"     tableName: 'payment') ~> payment",
+				"source(output(",
+				"          rental_id as integer,",
+				"          rental_date as timestamp,",
+				"          inventory_id as long,",
+				"          customer_id as integer,",
+				"          return_date as timestamp,",
+				"          staff_id as integer,",
+				"          last_update as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     store: 'synapse',",
+				"     databaseType: 'spark',",
+				"     format: 'table',",
+				"     database: 'sakila_db',",
+				"     tableName: 'rental') ~> rental",
+				"source(output(",
+				"          inventory_id as long,",
+				"          film_id as integer,",
+				"          store_id as integer,",
+				"          last_update as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     store: 'synapse',",
+				"     databaseType: 'spark',",
+				"     format: 'table',",
+				"     database: 'sakila_db',",
+				"     tableName: 'inventory') ~> inventory",
+				"source(output(",
+				"          film_id as integer,",
+				"          title as string,",
+				"          description as string,",
+				"          release_year as integer,",
+				"          language_id as integer,",
+				"          original_language_id as integer,",
+				"          rental_duration as integer,",
+				"          rental_rate as decimal(38,18),",
+				"          length as integer,",
+				"          replacement_cost as decimal(38,18),",
+				"          rating as string,",
+				"          special_features as string,",
+				"          last_update as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     store: 'synapse',",
+				"     databaseType: 'spark',",
+				"     format: 'table',",
+				"     database: 'sakila_db',",
+				"     tableName: 'film') ~> film",
+				"source(output(",
+				"          film_id as integer,",
+				"          category_id as integer,",
+				"          last_update as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     store: 'synapse',",
+				"     databaseType: 'spark',",
+				"     format: 'table',",
+				"     database: 'sakila_db',",
+				"     tableName: 'film_category') ~> filmcategory",
+				"source(output(",
+				"          category_id as integer,",
+				"          name as string,",
+				"          last_update as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     store: 'synapse',",
+				"     databaseType: 'spark',",
+				"     format: 'table',",
+				"     database: 'sakila_db',",
+				"     tableName: 'category') ~> category",
+				"payment, rental join(payment@rental_id == rental@rental_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, inventory join(rental@inventory_id == inventory@inventory_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2, film join(inventory@film_id == film@film_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3, filmcategory join(film@film_id == filmcategory@film_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join4",
+				"join4, category join(filmcategory@category_id == category@category_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join5",
+				"join5 aggregate(groupBy(name = film@film_id),",
+				"     column1 = count(amount),",
+				"          column2 = sum(amount)) ~> aggregate1"
+			]
+		}
+	}
+}
