@@ -23,7 +23,15 @@
 					"name": "category"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Parquet_df_fR",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
@@ -163,7 +171,24 @@
 				"     broadcast: 'auto')~> join5",
 				"join5 aggregate(groupBy(name = film@film_id),",
 				"     column1 = count(amount),",
-				"          column2 = sum(amount)) ~> aggregate1"
+				"          column2 = sum(amount)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          orderNumber as integer,",
+				"          orderDate as timestamp,",
+				"          requiredDate as timestamp,",
+				"          shippedDate as timestamp,",
+				"          status as string,",
+				"          comments as string,",
+				"          customerNumber as integer",
+				"     ),",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}

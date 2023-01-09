@@ -1,0 +1,49 @@
+{
+	"name": "Parquet_df_fR",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-001-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "dataflow",
+				"fileSystem": "synapse"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "orderNumber",
+				"type": "INT32"
+			},
+			{
+				"name": "orderDate",
+				"type": "INT96"
+			},
+			{
+				"name": "requiredDate",
+				"type": "INT96"
+			},
+			{
+				"name": "shippedDate",
+				"type": "INT96"
+			},
+			{
+				"name": "status",
+				"type": "UTF8"
+			},
+			{
+				"name": "comments",
+				"type": "UTF8"
+			},
+			{
+				"name": "customerNumber",
+				"type": "INT32"
+			}
+		]
+	}
+}
